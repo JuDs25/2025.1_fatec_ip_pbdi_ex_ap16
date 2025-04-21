@@ -1,3 +1,9 @@
+-- 1.3 anti-pattern 'ROW BY AGONIZING ROW':
+-- O anti-pattern "ROW BY AGONIZING ROW" faz referência ao uso inadequado de abordagens baseadas em linha (como cursores, loops e atualizações linha por linha) em um banco de dados relacional, que foi projetado para ser set-based (ou seja, projetado para trabalhar com conjuntos de dados).
+--No caso de "Row by Agonizing Row", o uso de cursores e loops para processar dados linha por linha é considerado um anti-pattern, pois isso vai contra os princípios do SQL e das operações em conjuntos de dados.
+-- Este nome 'ROW BY AGONIZING ROW' soa como um deboche, agonizing~, como se estivessemos subvertendo a maneira correta de usar SQL ao pegarmos linha por linha (como fazemos quando usamos cursores e loops), o SQL foi projetado para trabalhar com conjuntos de dados de uma só vez, otimizando o tempo de execução e utilizando recursos computacionais de maneira mais eficiente. 
+--Nos artigos que li eles destacam que cursores e loops só devem ser usados se forem REALMENTE NECESSÁRIOS, do contrário devemos utilizar índices e particionamento, funções agregadas, CTEs etc, basicamente ROW BY AGONIZING ROW reflete sobre desempenho ineficiente e uso excessivo de recursos.
+
 -- 1.2 cursor que exibe todos os nomes dos youtubers em ordem reversa:
 --SELECT deverá ordenar em ordem não reversa
 --o cursor deverá ser movido para a última tupla
