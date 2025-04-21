@@ -27,3 +27,37 @@ BEGIN
 	RAISE NOTICE '%', v_list_rank_youtuber;
 END;
 $$
+
+--  1.2 Escreva um cursor que exibe todos os nomes dos youtubers em ordem reversa. Para tal--
+-- O SELECT deverá ordenar em ordem não reversa
+-- O Cursor deverá ser movido para a última tupla
+-- Os dados deverão ser exibidos de baixo para cima
+DO $$
+DECLARE
+	--1. Declarando as minha variáveis
+	-- Criando o cursor não vinculado, porque não existe um parâmetro inicial e sim geral
+	cur_nome_youtuber REFCURSOR;
+	tupla RECORD;
+BEGIN
+	-- 2. Abrindo meu cursor em modo Scroll para poder ir para cima e para baixo
+	OPEN cur_nome_youtuber SCROLL FOR
+	SELECT youtuber FROM tb_top_youtubers;
+-- 3. Para criar a repetição e garantir a seleção de todos os youtubers
+	-- vai para o fim, para depois poder ir de baixo para cima
+	LOOP
+		FETCH cur_nome_youtuber INTO tupla;
+		EXIT WHEN NOT FOUND;
+	END LOOP;
+	-- agora sim ele vai de baixo para cima e apresenta os dados
+	LOOP
+		FETCH BACKWARD FROM cur_nome_youtuber INTO tupla;
+		EXIT WHEN NOT FOUND;
+		RAISE NOTICE '%', tupla.youtuber;
+	END LOOP;
+	-- 4. Fecha o cursor
+    CLOSE cur_nome_youtuber;
+END;
+$$
+
+
+-- SELECT * FROM tb_top_youtubers;
