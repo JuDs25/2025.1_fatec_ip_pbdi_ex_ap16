@@ -1,3 +1,55 @@
+-- 1.2 cursor que exibe todos os nomes dos youtubers em ordem reversa:
+--SELECT deverá ordenar em ordem não reversa
+--o cursor deverá ser movido para a última tupla
+--os dados deverão ser exibidos de baixo para cima
+DO $$
+DECLARE
+    v_youtuber VARCHAR(200);
+-- 1. declaração
+    cur_youtubers_desc CURSOR FOR 
+    SELECT youtuber
+    FROM tb_top_youtubers
+	ORDER BY youtuber
+    ;
+BEGIN
+-- 2. abertura
+    OPEN cur_youtubers_desc;
+-- mover o cursor para o final
+    MOVE LAST FROM cur_youtubers_desc;
+    LOOP
+-- 3. recuperação de dados
+        FETCH PRIOR FROM cur_youtubers_desc INTO v_youtuber;
+        EXIT WHEN NOT FOUND;
+        RAISE NOTICE '%', v_youtuber;
+    END LOOP;
+-- 4. fechamento
+    CLOSE cur_youtubers_desc;
+END;
+$$
+
+-- se fosse com ordenação direto no SELECT
+DO $$
+DECLARE
+    v_youtuber VARCHAR(200);
+-- cursor com SELECT ordenado de forma decrescente
+    cur_youtubers_desc CURSOR FOR
+        SELECT youtuber
+        FROM tb_top_youtubers
+        ORDER BY youtuber DESC;
+BEGIN
+-- 2. abertura
+    OPEN cur_youtubers_desc;
+    -- percorre normalmente (de cima pra baixo, pois o DESC esta no SELECT)
+    LOOP
+-- 3. recuperação de dados
+        FETCH cur_youtubers_desc INTO v_youtuber;
+        EXIT WHEN NOT FOUND;
+        RAISE NOTICE '%', v_youtuber;
+    END LOOP;
+-- 4. fechamento
+    CLOSE cur_youtubers_desc;
+END;
+$$;
 
 
 -- 1.1 cursor que exiba as variáveis rank e youtuber de toda tupla que tiver video_count pelo menos igual a 1000 e cuja category seja igual a 'Sports' ou 'Music'
@@ -39,17 +91,19 @@ DECLARE
     cur_sports_music REFCURSOR;
     v_youtuber TEXT;
     v_rank INT;
+    v_category VARCHAR(200); --trouxe category para conferir
 BEGIN
 --2. Abertura
-    OPEN cur_sports_music FOR EXECUTE '
-        SELECT youtuber, rank 
+    OPEN cur_sports_music FOR EXECUTE 
+        '
+        SELECT youtuber, rank, category
         FROM tb_top_youtubers 
         WHERE video_count >= 1000 AND category IN (''Music'', ''Sports'')'; --coloquei os parâmetros aqui dentro do select para testar, deu certo também
     LOOP
 --3. Recuperação de dados
-        FETCH cur_sports_music INTO v_youtuber, v_rank;
+        FETCH cur_sports_music INTO v_youtuber, v_rank, v_category;
         EXIT WHEN NOT FOUND;
-        RAISE NOTICE '%, %', v_youtuber, v_rank;
+        RAISE NOTICE '%, %, %', v_youtuber, v_rank, v_category; --trouxe category para conferir
     END LOOP;
 --4. Fechamento
     CLOSE cur_sports_music;
@@ -57,25 +111,29 @@ END;
 $$;
 
 
--- cursor vinculado (bound)
+-- cursor vinculado (bound) 
 DO $$
 DECLARE
 -- 1. declaração do cursor
 -- vinculado
     cur_sports_music CURSOR FOR
-        SELECT youtuber, rank
+        SELECT youtuber, rank, category --trouxe category para conferir
         FROM tb_top_youtubers
-        WHERE video_count >= 1000 AND (category = 'Music' OR category = 'Sports');
+        WHERE video_count >= 1000 AND 
+            (category = 'Music' 
+            OR category = 'Sports'
+            );
     v_youtuber VARCHAR(200);
     v_rank INT;
+    v_category VARCHAR(200);
 BEGIN
 -- 2. abertura do cursor
     OPEN cur_sports_music;
     LOOP
 -- 3. Recuperação de dados
-        FETCH cur_sports_music INTO v_youtuber, v_rank;
+        FETCH cur_sports_music INTO v_youtuber, v_rank, v_category;
         EXIT WHEN NOT FOUND;
-        RAISE NOTICE '%, %', v_youtuber, v_rank;
+        RAISE NOTICE '%, %, %', v_youtuber, v_rank, v_category; --trouxe category para conferir
     END LOOP;
 -- 4. Fechamento
     CLOSE cur_sports_music;
