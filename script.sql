@@ -58,6 +58,11 @@ BEGIN
     CLOSE cur_nome_youtuber;
 END;
 $$
-
-
 -- SELECT * FROM tb_top_youtubers;
+
+
+
+
+
+
+
