@@ -1,0 +1,22 @@
+--  1.3 Faça uma pesquisa sobre o anti-pattern chamado RBAR- Row By Agonizing Row.
+-- Explique com suas palavras do que se trata.
+
+-- É um anti padrão que na tradução já dá para entender um pouco da sua problemática, onde significa "RBAR - Linha por Linha agonizante"
+-- Ou seja, é quando você navega linha a linha aos poucos. Isso gera lentidão e ineficiência, principalmente em bancos de dados grandes. É comum que isso ocorra quando usamos loops (FOR, WHILE, FETCH) de forma desnecessária, quando seria possível resolver o problema usando comandos SQL vetorizados, como UPDATE, INSERT ou DELETE de forma massiva.
+
+-- Isso é importante porque ao estudar cursor podemos querer usar ele para ações que poderiam envolver apenas um SQL básico.
+-- Porque os Cursores servem para:
+-- * Navegar linha a linha quando realmente é necessário fazer processamento individual em cada linha.
+-- * Controlar lógica complexa que não dá para resolver só com SQL direto (por exemplo: múltiplas ações diferentes dependendo do conteúdo da linha).
+
+-- Onde usar cursor vira RBAR (e é errado):
+-- Quando você poderia fazer tudo com um único UPDATE, INSERT, DELETE ou SELECT, mas usa FOR, FETCH, LOOP só porque sim.
+-- EXEMPLO:
+-- FOR rec IN SELECT * FROM vendas LOOP
+--   UPDATE vendas SET valor_total = valor_unitario * quantidade
+--   WHERE id = rec.id;
+-- END LOOP;
+
+-- Onde o certo seria:
+-- UPDATE vendas
+-- SET valor_total = valor_unitario * quantidade;
